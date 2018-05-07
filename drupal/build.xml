@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Dear Recruity CMS" default="test">
+
+    <property name="structure_tables_list" value="watchdog,sessions,semaphore,queue,cachetags,cache_ultimate_cron_logger,cache_widget_markup,cache_toolbar,cache_render,cache_menu,cache_entity,cache_dynamic_page_cache,cache_discovery,cache_default,cache_data,cache_container,cache_config,cache_bootstrap,cache_geocoder,cache_signal,cache_rest,batch,webform_submission,webform_submission_data,webform_submission_log,ultimate_cron_log,ultimate_cron_lock,ultimate_cron_signal"/>
+    <fileset id="custom-modules" dir="modules/custom">
+        <include name="**/*.php"/>
+        <include name="**/*.inc"/>
+        <include name="**/*.module"/>
+        <include name="**/*.theme"/>
+        <include name="**/*.install"/>
+        <exclude name="**/*Test.php"/>
+    </fileset>
+
+    <fileset id="custom-themes" dir="themes/custom">
+        <include name="**/*.php"/>
+        <include name="**/*.inc"/>
+        <include name="**/*.module"/>
+        <include name="**/*.theme"/>
+    </fileset>
+
+    <target name="build">
+        <exec command="composer install"/>
+    </target>
+
+    <target name="php-coding-standards">
+        <mkdir dir="reports" />
+        <phpcodesniffer
+                standard="phpcs.xml"
+                allowedFileExtensions="php inc module theme install"
+                haltonerror="true"
+                showSources="true">
+            <formatter type="full" usefile="false"/>
+            <formatter type="checkstyle" outfile="reports/phpcs.xml"/>
+
+            <fileset refid="custom-modules"/>
+            <fileset refid="custom-themes"/>
+        </phpcodesniffer>
+    </target>
+
+    <target name="js-coding-standards">
+        <mkdir dir="reports" />
+        <exec
+                command="eslint -c .eslintrc.json --debug -f checkstyle -o reports/eslint.xml modules/custom themes/custom"
+                checkreturn="true"
+                passthru="true"/>
+    </target>
+
+    <target name="js-coding-standards-verbose">
+        <exec
+                command="eslint modules/custom themes/custom"
+                checkreturn="true"
+                passthru="true"/>
+    </target>
+
+    <target name="lint">
+        <phplint haltonfailure="true">
+            <fileset refid="custom-modules"/>
+            <fileset refid="custom-themes"/>
+        </phplint>
+    </target>
+
+    <target name="unit-tests">
+        <exec
+                command="SIMPLETEST_DB=sqlite://localhost//tmp/test.sqlite SIMPLETEST_BASE_URL=http://${env.BASE_HOSTNAME} ../../vendor/bin/phpunit --log-junit ../../reports/phpunit.xml ../modules/custom"
+                dir="web/core"
+                checkreturn="true"
+                passthru="true"
+        />
+    </target>
+
+    <target name="test">
+        <phingcall target="lint"/>
+        <phingcall target="php-coding-standards"/>
+        <phingcall target="js-coding-standards"/>
+        <phingcall target="acceptance-tests"/>
+    </target>
+
+    <target name="update">
+        <exec
+                command="../vendor/bin/drush cr -y"
+                dir="web"
+                passthru="true"
+                checkreturn="true">
+        </exec>
+        <exec
+                command="../vendor/bin/drush entity-updates -y"
+                dir="web"
+                passthru="true"
+                checkreturn="true">
+        </exec>
+        <exec
+                command="../vendor/bin/drush cim -y"
+                dir="web"
+                passthru="true"
+                checkreturn="true">
+        </exec>
+        <exec
+                command="../vendor/bin/drush updb -y"
+                dir="web"
+                passthru="true"
+                checkreturn="true">
+        </exec>
+        <phingcall target="import-translations" />
+        <exec
+                command="../vendor/bin/drush cr -y"
+                dir="web"
+                passthru="true"
+                checkreturn="true">
+        </exec>
+    </target>
+
+    <target name="acceptance-tests">
+        <if>
+            <isset property="test.tags"/>
+            <then>
+                <echo message="Limited to scenarios tagged with: ${test.tags}"/>
+                <exec
+                        executable="vendor/bin/behat"
+                        passthru="true"
+                        checkreturn="true">
+                    <arg value="--tags=${test.tags}" />
+                </exec>
+            </then>
+            <else>
+                <exec
+                        executable="vendor/bin/behat"
+                        passthru="true"
+                        checkreturn="true">
+                </exec>
+            </else>
+        </if>
+    </target>
+
+    <patternset id="assets">
+        <include name="**/*.css" />
+        <include name="**/*.js" />
+        <include name="**/*.svg" />
+        <include name="**/*.jpg" />
+        <include name="**/*.jpeg" />
+        <include name="**/*.png" />
+        <include name="**/*.gif" />
+        <include name="**/*.ico" />
+        <include name="**/*.map" />
+        <exclude name="**/tests/**"/>
+        <exclude name="**/Tests/**"/>
+    </patternset>
+
+    <target name="assets">
+        <delete dir="build/assets" />
+        <mkdir dir="build/assets" />
+        <copy todir="build/assets/modules" >
+            <fileset dir="./modules">
+                <patternset refid="assets"></patternset>
+            </fileset>
+        </copy>
+        <copy todir="build/assets/themes">
+            <fileset dir="./themes">
+                <patternset refid="assets"></patternset>
+            </fileset>
+        </copy>
+        <copy todir="build/assets/core" >
+            <fileset dir="./core">
+                <patternset refid="assets"></patternset>
+            </fileset>
+        </copy>
+        <copy todir="build/assets/libraries" >
+            <fileset dir="./libraries">
+                <patternset refid="assets"></patternset>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="test-users">
+        <property file="build.properties.yml" />
+
+        <foreach list="${users}" target="create-user" param="username" />
+    </target>
+
+    <target name="create-user" hidden="true">
+        <property name="password" value="${user_definition.${username}.password}"/>
+        <property name="roles" value="${user_definition.${username}.roles}" />
+
+        <echo message="creating user ${username}"/>
+        <exec executable="../vendor/bin/drush" checkreturn="true">
+            <arg value="user-create" />
+            <arg value="${username}" />
+            <arg value="--password=${password}" />
+        </exec>
+        <foreach list="${roles}" delimiter="," param="role" target="add-role" />
+    </target>
+
+    <target name="add-role" hidden="true">
+        <echo message="adding role ${role} to user ${username}"/>
+        <exec executable="../vendor/bin/drush" checkreturn="true">
+            <arg value="user-add-role" />
+            <arg value="${role}"/>
+            <arg value="${username}"/>
+        </exec>
+    </target>
+
+    <target name="reset-customized-translations-flag">
+        <exec executable="../vendor/bin/drush" checkreturn="true" passthru="true">
+            <arg value="sqlq"/>
+            <arg value="UPDATE locales_target SET customized=0 WHERE customized=1"/>
+        </exec>
+    </target>
+
+    <target name="import-translations">
+        <exec executable="../vendor/bin/drush" checkreturn="true" passthru="true" dir="web">
+            <arg value="langimp"/>
+            <arg value="--langcode=nl" />
+            <arg value="--no-replace-customized" />
+            <arg value="../translations/nl.po"/>
+        </exec>
+
+        <exec executable="../vendor/bin/drush" checkreturn="true" passthru="true" dir="web">
+            <arg value="langimp"/>
+            <arg value="--langcode=fr" />
+            <arg value="--no-replace-customized" />
+            <arg value="../translations/fr.po"/>
+        </exec>
+    </target>
+
+    <target name="dump-demo-database">
+        <mkdir dir="../init/demo/database" />
+        <exec executable="../vendor/bin/drush" dir="web" checkreturn="true" passthru="true">
+            <arg value="sql-dump"/>
+            <arg value="--structure-tables-list=${structure_tables_list}"/>
+            <arg value="--result-file=../init/demo/database/dear-recruity-cms.sql"/>
+        </exec>
+    </target>
+
+    <target name="dump-demo-files">
+        <mkdir dir="init/demo/files" />
+        <delete includeemptydirs="false">
+            <fileset dir="init/demo/files" includes="**/*" />
+        </delete>
+        <copy todir="init/demo/files">
+            <fileset dir="./web/sites/default/files">
+                <exclude name="php/**" />
+                <exclude name="css/**" />
+                <exclude name="js/**" />
+                <exclude name="styles/**" />
+                <exclude name="languages/**" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="truncate-cache-tables">
+        <foreach list="${structure_tables_list}" target="truncate-table" param="table" />
+    </target>
+
+    <target name="truncate-table" hidden="true">
+        <echo message="truncating table ${table}..."/>
+        <exec executable="../vendor/bin/drush" checkreturn="true" passthru="true">
+            <arg value="sqlq"/>
+            <arg value="TRUNCATE TABLE ${table}"/>
+        </exec>
+    </target>
+
+    <target name="update-drupal-core">
+        <exec executable="composer" checkreturn="true" passthru="true">
+            <arg value="update"/>
+            <arg value="drupal/core"/>
+            <arg value="--with-dependencies"/>
+        </exec>
+    </target>
+
+</project>

@@ -1,0 +1,14 @@
+uuid: d639ab9e-2483-4568-b69d-76c8b1826701
+name: 'Dear Recruity CMS'
+mail: test@example.com
+slogan: ''
+page:
+  403: ''
+  404: ''
+  front: /node
+admin_compact_mode: false
+weight_select_max: 100
+langcode: en
+default_langcode: en
+_core:
+  default_config_hash: yXadRE77Va-G6dxhd2kPYapAvbnSvTF6hO4oXiOEynI

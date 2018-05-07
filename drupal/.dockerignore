@@ -1,0 +1,15 @@
+.idea
+.DS_Store
+
+.git
+.gitignore
+
+.dist.env
+/init
+!/init/database
+/vendor
+
+docker-compose*
+Dockerfile
+Dockerfile.*
+.dockerignore

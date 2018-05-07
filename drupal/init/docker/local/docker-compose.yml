@@ -1,0 +1,70 @@
+version: "3"
+
+services:
+  database:
+    image: mysql:5.7
+    volumes:
+      - ./init/database:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=drupal
+      - MYSQL_PASSWORD=drupal
+      - MYSQL_DATABASE=drupal
+    labels:
+      - "traefik.enable=false"
+    ports:
+      - 3306:3306
+    networks:
+      - dear-recruity-cms
+
+  web:
+    image: cegeka/php:7.2-apache-stretch
+    volumes:
+      - .:/var/www/project:cached
+      - /var/www/project/web/sites/default/files/php
+      - /var/www/project/web/sites/default/files/styles
+    environment:
+      - DRUPAL_HASH_SALT=YtkKPdmbjpY18Xu8HkF3vMbR_9hHcq4UqcBz9zk8naMiz9aHJN8BQ1sBok9HK2kKwdWu2_LQmg
+      - DRUPAL_DB_DATABASE=drupal
+      - DRUPAL_DB_USERNAME=drupal
+      - DRUPAL_DB_PASSWORD=drupal
+      - DRUPAL_DB_HOST=database
+      - DRUPAL_DB_PORT=3306
+      - TRUSTED_HOSTS_PATTERN
+      - APACHE_DOCUMENT_ROOT=/var/www/project/web
+      - PHP_UPLOAD_MAX_FILESIZE=32M
+      - PHP_POST_MAX_SIZE=32M
+      - PHP_MAX_EXECUTION_TIME=300 # 5 minutes
+      - PHP_DATE_TIMEZONE=Europe/Brussels
+      - PHP_XDEBUG=1                 # Enable Xdebug extension
+      - PHP_XDEBUG_DEFAULT_ENABLE=0  # Comment out to disable (default).
+      - PHP_XDEBUG_REMOTE_CONNECT_BACK=0         # This is needed to respect remote.host setting bellow
+      - PHP_XDEBUG_REMOTE_HOST="10.254.254.254"  # You will also need to 'sudo ifconfig lo0 alias 10.254.254.254'
+      - PHP_XDEBUG_REMOTE_PORT
+    labels:
+      - 'traefik.backend=web'
+      - 'traefik.port=80'
+      - "traefik.frontend.rule=Host:${BASE_HOSTNAME}"
+      - "traefik.enable=${TRAEFIK_ENABLED}"
+    networks:
+      dear-recruity-cms:
+        aliases:
+          - "${BASE_HOSTNAME}"
+
+  traefik:
+    image: traefik
+    command: -c /dev/null --web --docker --logLevel=INFO
+    ports:
+      - "${EXTERNAL_PORT_HTTP}:80"
+      - "${EXTERNAL_PORT_HTTPS}:443"
+      - "${EXTERNAL_PORT_TRAEFIK_DASHBOARD}:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - dear-recruity-cms
+    depends_on:
+      - web
+
+networks:
+  dear-recruity-cms:
+    driver: bridge
