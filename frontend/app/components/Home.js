@@ -57,7 +57,7 @@ export default class Home extends Component<Props> {
             C75.7,59.3,73.1,61.2,69.7,61z"/>
           </svg>
           <h2>Deer recruity</h2>
-          <Link className={styles.linktotests} to="/question">Show me the questions!</Link>
+          <Link className={styles.linktotests} to="/steps/0">Show me the questions!</Link>
         </div>
       </div>
     );

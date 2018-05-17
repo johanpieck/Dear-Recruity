@@ -12,7 +12,7 @@ export default () => (
   <App>
     <Switch>
       <Route path="/question" component={QuestionPage} />
-      <Route path="/steps" component={StepsPage} />
+      <Route path="/steps/:id" component={StepsPage} />
       <Route path="/counter" component={CounterPage} />
       <Route path="/" component={HomePage} />
     </Switch>
