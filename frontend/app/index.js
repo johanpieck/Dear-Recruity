@@ -4,6 +4,7 @@ import { AppContainer } from 'react-hot-loader';
 import Root from './containers/Root';
 import { configureStore, history } from './store/configureStore';
 import './app.global.css';
+import * as contentful from 'contentful'
 
 const store = configureStore();
 
@@ -25,3 +26,14 @@ if (module.hot) {
     );
   });
 }
+
+var client = contentful.createClient({
+  space: 'a1u244fv3bsz',
+  accessToken: '' })
+client.getEntries().then(entries => {
+  entries.items.forEach(entry => {
+  if(entry.fields) {
+  console.log(entry.fields)
+}
+})
+})
