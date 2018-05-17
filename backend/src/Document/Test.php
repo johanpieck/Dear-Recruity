@@ -5,9 +5,9 @@ namespace App\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
- * @MongoDB\Document
+ * @MongoDB\Document(collection="tests")
  */
-class Test implements \JsonSerializable
+class Test
 {
     /**
      * @MongoDB\Id()
@@ -33,6 +33,11 @@ class Test implements \JsonSerializable
      * @MongoDB\Field(type="date")
      */
     protected $create_date;
+
+    /**
+     * @MongoDB\EmbedMany(targetDocument="Step")
+     */
+    protected $steps;
 
     /**
      * @return mixed
@@ -115,20 +120,18 @@ class Test implements \JsonSerializable
     }
 
     /**
-     * Specify data which should be serialized to JSON
-     *
-     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     * which is a value of any type other than a resource.
-     * @since 5.4.0
+     * @return mixed
      */
-    public function jsonSerialize()
+    public function getSteps()
     {
-        return [
-            'id' => $this->id,
-            'first_name' => $this->firstname,
-            'last_name' => $this->lastname,
-            'email' => $this->email,
-        ];
+        return $this->steps;
+    }
+
+    /**
+     * @param mixed $steps
+     */
+    public function setSteps($steps)
+    {
+        $this->steps = $steps;
     }
 }
