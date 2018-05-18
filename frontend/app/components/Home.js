@@ -82,7 +82,7 @@ export default class Home extends Component<Props> {
           <form onSubmit={this.handleSubmit}>
             <label>Please give us your name</label>
             <input type="text" value={this.state.nameValue} onChange={this.handleChange} />
-            <input type="submit" value="Submit" />
+            <input type="submit" value="Go!" />
           </form>
           <Link className={styles.linktotests} to="/steps/0">Show me the questions!</Link>
         </div>
