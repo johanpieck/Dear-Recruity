@@ -17,10 +17,10 @@ type Props = {};
  */
 let mapQuestionToQuestionType = function(question) {
   if (question.sys.contentType.sys.id === 'question') {
-    return <MultipleChoiceQuestion key="1" {...question.fields} />
+    return <MultipleChoiceQuestion key={question.sys.id} {...question.fields} />
   }
   else if (question.sys.contentType.sys.id === 'technicalQuestion') {
-    return <TechnicalQuestion key="1" question={question} />;
+    return <TechnicalQuestion key={question.sys.id} question={question} />;
   }
 };
 
@@ -54,6 +54,7 @@ export default class StepsPage extends Component<Props> {
 
     if (typeof this.state.posts[this.props.match.params.id] !== "undefined") {
       question = mapQuestionToQuestionType(this.state.posts[this.props.match.params.id]);
+
       pager = <Pager key="2" id={this.props.match.params.id} max={this.state.posts.length} />
     }
 
