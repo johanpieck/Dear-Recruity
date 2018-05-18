@@ -29,7 +29,6 @@ export default class Home extends Component<Props> {
     console.log('A name was submitted: ' + this.state.nameValue);
     sessionStorage.setItem('uuid', this.state.nameValue);
     console.log(sessionStorage);
-    event.preventDefault();
   }
 
   render() {
@@ -82,11 +81,11 @@ export default class Home extends Component<Props> {
           </svg>
           <h2>deer recruity</h2>
           <p className={styles.intro}>Proin eget tortor risus. Cras ultricies ligula sed magna dictum porta. Quisque velit nisi, pretium ut lacinia in, elementum id enim.</p>
-          <form onSubmit={this.handleSubmit}>
+          <div>
             <input placeholder="Please give us your name" type="text" value={this.state.nameValue} onChange={this.handleChange} />
             <br/>
-            <input className={ (this.inputNotEmpty ? '' : 'disabled') } type="submit" value="Show me the questions" />
-          </form>
+            <Link to="/steps/0" className={ (this.inputNotEmpty ? '' : 'disabled') } onClick={this.handleSubmit}>Show me the questions</Link>
+          </div>
         </div>
       </div>
     );

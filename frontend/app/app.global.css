@@ -47,7 +47,7 @@ a:hover {
   cursor: pointer;
 }
 
-input[type="submit"].disabled {
+a.disabled {
   pointer-events: none;
   background: #888;
 }
