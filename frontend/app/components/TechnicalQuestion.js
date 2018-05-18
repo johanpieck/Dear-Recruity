@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import styles from './TechnicalQuestion.css';
 import {editor, resizeEditor} from '../public/editor'
+import {Link} from 'react-router-dom';
 
 export default class TechnicalQuestion extends Component<Props> {
   props: Props;

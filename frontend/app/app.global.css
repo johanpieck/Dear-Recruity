@@ -11,6 +11,7 @@ body {
   background-image: radial-gradient(#fafafa, #ddd);
   font-family: Arial, Helvetica, Helvetica Neue, serif;
   overflow-y: hidden;
+  margin: 0;
 }
 
 .cry {

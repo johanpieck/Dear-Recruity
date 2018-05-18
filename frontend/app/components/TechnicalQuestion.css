@@ -1,8 +1,6 @@
 .container {
-    width: 60%;
-    float: left;
-    margin-left: 25px;
-    top: calc(50% - 220px);
+    width: calc(100% - 400px);
+    margin-left: 350px;
     position: relative;
 }
 
@@ -11,4 +9,12 @@
     position: relative;
     width: 100%;
     height: 400px;
+}
+
+.linkTopHomepage {
+    float: right;
+}
+
+.container h2 {
+    margin-top: 50px;
 }

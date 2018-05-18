@@ -1,6 +1,5 @@
 .container {
-    width: 60%;
-    float: left;
-    margin-left: 25px;
-    top: calc(50% - 220px);
+    width: calc(100% - 400px);
+    margin-left: 350px;
+    position: relative;
 }
