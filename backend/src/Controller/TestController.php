@@ -46,7 +46,10 @@ class TestController extends Controller
         return new Response(
           $serializer->serialize($allTests, 'json'),
           200,
-          ['Content-Type' => 'application/json']
+          [
+            'Content-Type' => 'application/json',
+            'Access-Control-Allow-Origin'=> '*',
+          ]
         );
     }
 
@@ -60,7 +63,10 @@ class TestController extends Controller
         return new Response(
           $serializer->serialize($test, 'json'),
           200,
-          ['Content-Type' => 'application/json']
+          [
+            'Content-Type' => 'application/json',
+            'Access-Control-Allow-Origin'=> '*',
+          ]
         );
     }
 }

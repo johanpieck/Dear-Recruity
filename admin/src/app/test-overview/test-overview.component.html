@@ -1,0 +1,9 @@
+<div>
+  <ul>
+    <li *ngFor="let test of tests$ | async">
+      <a routerLink="detail/{{test.id}}">
+        {{ test.firstname }} {{ test.lastname }}
+      </a>
+    </li>
+  </ul>
+</div>
