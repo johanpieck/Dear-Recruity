@@ -36,7 +36,7 @@ import styles from './MultipleChoiceQuestion.css';
       this.setState({
         selectedOption: e.target.value
       });
-      let questions = JSON.parse(sessionStorage.getItem('questions'));
+      let questions = sessionStorage.getItem('questions') ? JSON.parse(sessionStorage.getItem('questions')) : { };
       questions[this.props.question] = e.target.value;
       sessionStorage.setItem('questions', JSON.stringify(questions));
       sessionStorage.setItem(this.props.question, e.target.value);
