@@ -103,7 +103,7 @@ class TestController extends Controller
      */
     public function viewTest($uuid, DocumentManager $dm, Serializer $serializer) {
         $repo = $dm->getRepository(Test::class);
-        $test = $repo->findBy(['uuid' => $uuid]);
+        $test = $repo->findOneBy(['uuid' => $uuid]);
 
         return new Response(
           $serializer->serialize($test, 'json'),
