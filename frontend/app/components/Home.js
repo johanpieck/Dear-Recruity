@@ -8,19 +8,40 @@ type Props = {};
 export default class Home extends Component<Props> {
   props: Props;
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      nameValue: ''
+    };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({nameValue: event.target.value});
+  }
+
+  handleSubmit(event) {
+    console.log('A name was submitted: ' + this.state.nameValue);
+    sessionStorage.setItem('uuid', this.state.nameValue);
+    console.log(sessionStorage);
+    event.preventDefault();
+  }
+
   render() {
     return (
       <div>
         <div className={styles.container} data-tid="container">
-        <svg className={styles.logo} viewBox="0 0 100 120">
-          <path className={styles.svgcolor} d="M40.2,77c0.4-0.6,0.8-1,1.2-1.2l-1.1,0.5C40.3,76.5,40.3,76.8,40.2,77z"/>
-          <path className={styles.svgcolor} d="M63.4,94.3c-2.1-3.7-2.6-7.1-2.7-9.2c-0.2,0.7-0.5,1.4-0.8,2.1c0.1,0.9,1,7.8-2.7,9.8c-0.7,0.4-1.1,2.6-1.2,4l0,0.1
-            c0,0-1.5,4.3-5.6,4.4c-4.1-0.1-5.6-4.3-5.6-4.4l0-0.1c-0.1-1.3-0.6-3.6-1.2-4c-3.6-2.1-2.8-9-2.7-9.9c-0.3-0.7-0.6-1.4-0.8-2.1
-            c-0.1,2.1-0.5,5.5-2.7,9.2c-1.9,3.4-1,9.1,0.1,11l0.2,0.3c1.4,2.3,5.1,8.6,12.5,8.6l0.2,0l0.2,0c7.5,0,11.1-6.3,12.5-8.6l0.2-0.3
-            C64.4,103.4,65.3,97.7,63.4,94.3z"/>
-          <path className={styles.svgcolor} d="M39.4,78.8l-0.1-0.1c0.1-0.2,1.7-3.8,3-4.3l0,0.1C41.1,75,39.4,78.8,39.4,78.8z"/>
-          <path className={styles.svgcolor} d="M61.3,78.6c0,0-1.7-3.8-2.9-4.2l0-0.1c1.3,0.4,2.9,4.1,3,4.3L61.3,78.6z"/>
-          <path className={styles.svgcolor} d="M96.9,33.9c-0.1-1.4-0.6-0.4-0.6-0.4s-1.4,5.1-1.8,5.8c-0.4,0.7-1.4,3-3,4.2c-1.5,1.2-2.5,1.9-2.9,1.9
+          <svg className={styles.logo} viewBox="0 0 100 120">
+            <path className={styles.svgcolor} d="M40.2,77c0.4-0.6,0.8-1,1.2-1.2l-1.1,0.5C40.3,76.5,40.3,76.8,40.2,77z"/>
+            <path className={styles.svgcolor} d="M63.4,94.3c-2.1-3.7-2.6-7.1-2.7-9.2c-0.2,0.7-0.5,1.4-0.8,2.1c0.1,0.9,1,7.8-2.7,9.8c-0.7,0.4-1.1,2.6-1.2,4l0,0.1
+              c0,0-1.5,4.3-5.6,4.4c-4.1-0.1-5.6-4.3-5.6-4.4l0-0.1c-0.1-1.3-0.6-3.6-1.2-4c-3.6-2.1-2.8-9-2.7-9.9c-0.3-0.7-0.6-1.4-0.8-2.1
+              c-0.1,2.1-0.5,5.5-2.7,9.2c-1.9,3.4-1,9.1,0.1,11l0.2,0.3c1.4,2.3,5.1,8.6,12.5,8.6l0.2,0l0.2,0c7.5,0,11.1-6.3,12.5-8.6l0.2-0.3
+              C64.4,103.4,65.3,97.7,63.4,94.3z"/>
+            <path className={styles.svgcolor} d="M39.4,78.8l-0.1-0.1c0.1-0.2,1.7-3.8,3-4.3l0,0.1C41.1,75,39.4,78.8,39.4,78.8z"/>
+            <path className={styles.svgcolor} d="M61.3,78.6c0,0-1.7-3.8-2.9-4.2l0-0.1c1.3,0.4,2.9,4.1,3,4.3L61.3,78.6z"/>
+            <path className={styles.svgcolor} d="M96.9,33.9c-0.1-1.4-0.6-0.4-0.6-0.4s-1.4,5.1-1.8,5.8c-0.4,0.7-1.4,3-3,4.2c-1.5,1.2-2.5,1.9-2.9,1.9
             c-0.4,0.1-0.6,0-0.2-1.3c0.4-1.4,1.4-6.4,1.4-6.9c0.1-0.5,1-4.6,0.9-6.1c-0.1-0.9,0.6-5.7,0.7-6.1c0.1-0.4,1.1-6.7,1-7.9
             c-0.1-1.3-1.3-4.1-1.5-4.9c-0.3-0.8-0.5-3.1-1-4.1c-0.5-1-0.3-1.9-0.8-1.8c-0.5,0.1,0,1.8,0,2.1c0,0.2,0.2,2.6,0.2,3.3
             c0,0.7,0.5,3.3,0.8,3.9c0.2,0.6,0.4,1.7,0.3,2.7c-0.2,1-0.3,2.7-0.7,3.2c-0.4,0.5-1.4,2.2-2.7,0.8c-0.4-0.4-1.6-3.1-2.1-3.9
@@ -58,6 +79,11 @@ export default class Home extends Component<Props> {
           </svg>
           <h2>deer recruity</h2>
           <p className={styles.intro}>Proin eget tortor risus. Cras ultricies ligula sed magna dictum porta. Quisque velit nisi, pretium ut lacinia in, elementum id enim.</p>
+          <form onSubmit={this.handleSubmit}>
+            <label>Please give us your name</label>
+            <input type="text" value={this.state.nameValue} onChange={this.handleChange} />
+            <input type="submit" value="Go!" />
+          </form>
           <Link className={styles.linktotests} to="/steps/0">Show me the questions!</Link>
         </div>
       </div>
