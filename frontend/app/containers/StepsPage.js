@@ -5,7 +5,7 @@ import MultipleChoiceQuestion from '../components/MultipleChoiceQuestion';
 import TechnicalQuestion from '../components/TechnicalQuestion';
 import Steps from '../components/Steps';
 import { configureStore, history } from '../store/configureStore';
-import Pager from '../components/Pager'
+import Pager from '../components/Pager';
 
 type Props = {};
 
@@ -38,16 +38,19 @@ export default class StepsPage extends Component<Props> {
     accessToken: 'dd0796aa887494fac937ea656eb9b330db9d69e1e7889e98b99c040ae6854986'
   });
 
-  componentDidMount() {
-    this.fetchPosts().then(this.setPosts).then(this.render());
-  }
-
   fetchPosts = () => this.client.getEntries();
+  
   setPosts = response => {
     this.setState({
       posts: response.items
     });
   };
+
+  componentDidMount() {
+    this.fetchPosts().then(this.setPosts).then(this.render());
+  }
+
+  
 
   render() {
     sessionStorage.setItem('uuid', 'ElonRocket2018');

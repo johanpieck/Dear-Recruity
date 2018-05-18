@@ -1,7 +1,19 @@
 .container {
-    width: 60%;
-    float: left;
-    margin-left: 25px;
-    top: calc(50% - 220px);
+    width: calc(100% - 400px);
+    margin-left: 350px;
     position: relative;
+}
+
+.linktotestsNext {
+    color: #fff;
+    font-size: 1rem;
+    background: orangered;
+    padding: 2px 5px;
+    border-radius: 4px;
+    display: inline-block;
+}
+.linktotestsPrev {
+    color: #444;
+    font-size: 1rem;
+    display: inline-block;
 }
