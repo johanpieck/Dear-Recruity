@@ -2,6 +2,10 @@
 
 namespace App\Controller;
 
+use App\Document\Step;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use JMS\Serializer\Serializer;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Document\Test;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -19,6 +23,12 @@ class TestController extends Controller
         $user->setEmail("hello@medium.com");
         $user->setFirstname("Matt");
         $user->setLastname("Matt");
+
+        $user->setSteps([
+          new Step("question 1", "answer 1"),
+          new Step("question 2", "answer 2"),
+        ]);
+
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $dm->persist($user);
@@ -27,16 +37,30 @@ class TestController extends Controller
     }
 
     /**
-     * @Route("/view")
+     * @Route("/api/tests")
      */
-    public function viewDocuments() {
-        /** @var \Doctrine\ODM\MongoDB\DocumentManager $dm */
-        $dm = $this->get('doctrine_mongodb')->getManager();
+    public function viewTests(DocumentManager $dm, Serializer $serializer) {
         $repo = $dm->getRepository(Test::class);
         $allTests = $repo->findAll();
 
-        var_dump($allTests);
+        return new Response(
+          $serializer->serialize($allTests, 'json'),
+          200,
+          ['Content-Type' => 'application/json']
+        );
+    }
 
-        return new JsonResponse($allTests);
+    /**
+     * @Route("/api/test/{id}")
+     */
+    public function viewTest($id, DocumentManager $dm, Serializer $serializer) {
+        $repo = $dm->getRepository(Test::class);
+        $test = $repo->find($id);
+
+        return new Response(
+          $serializer->serialize($test, 'json'),
+          200,
+          ['Content-Type' => 'application/json']
+        );
     }
 }

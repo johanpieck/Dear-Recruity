@@ -1,0 +1,6 @@
+.container {
+    width: 60%;
+    float: left;
+    margin-left: 25px;
+    top: calc(50% - 220px);
+}

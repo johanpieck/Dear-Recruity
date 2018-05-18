@@ -58,7 +58,7 @@ export default class Home extends Component<Props> {
           </svg>
           <h2>deer recruity</h2>
           <p className={styles.intro}>Proin eget tortor risus. Cras ultricies ligula sed magna dictum porta. Quisque velit nisi, pretium ut lacinia in, elementum id enim.</p>
-          <Link className={styles.linktotests} to="/steps">Show me the steps!</Link>
+          <Link className={styles.linktotests} to="/steps/0">Show me the questions!</Link>
         </div>
       </div>
     );
