@@ -11,7 +11,9 @@ import styles from './MultipleChoiceQuestion.css';
               name={props.question}
               value={index}
               key={index}
-              onChange={onChange} />
+              checked={(selected == index) ? true : false}
+              onChange={onChange}
+               />
             {name}
           </label>
         ))}
@@ -31,16 +33,19 @@ import styles from './MultipleChoiceQuestion.css';
   
     handleOnChange(e) {
       console.log('selected option', e.target.value);
-      this.setState({ selectedOption: e.target.value});
+      this.setState({
+        selectedOption: e.target.value
+      });
     }
   
     render() {
       return (
-        <div className="poll">
+        <div className={styles.container}>
           <MultipleChoice
             props = {this.props}
+            selected={this.state.selectedOption}
             onChange={(e) => this.handleOnChange(e)}
-            selected={this.state.selectedOption} />
+            />
           <button onClick={() => this.handleClick()}>Submit</button>
         </div>
       );

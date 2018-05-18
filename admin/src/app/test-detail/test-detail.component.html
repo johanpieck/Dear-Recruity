@@ -1,11 +1,19 @@
 <div *ngIf="test">
-  First name: {{ test.firstname }}<br>
-  Last name: {{ test.lastname }}<br>
-  Steps:<br>
-  <ul>
-    <li *ngFor="let step of test.steps">
-      Question: {{ step.question }}<br>
-      Answer: {{ step.answer }}<br>
-    </li>
-  </ul>
+  <h1>Test resultaten</h1>
+
+  <h2>Kandidaat</h2>
+  <dl class="row">
+    <dt class="col-sm-3">Voornaam</dt>
+    <dd class="col-sm-9">{{ test.firstname }}</dd>
+    <dt class="col-sm-3">Achternaam</dt>
+    <dd class="col-sm-9">{{ test.firstname }}</dd>
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">{{ test.email }}</dd>
+  </dl>
+
+  <h2>Steps</h2>
+  <div *ngFor="let step of test.steps" class="border-bottom mt-3">
+    <p><strong>{{ step.question }}</strong></p>
+    <p>{{step.answer}}</p>
+  </div>
 </div>
