@@ -5,9 +5,9 @@ namespace App\Controller;
 use App\Document\Step;
 use App\Repository\TestRepository;
 use DateTime;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use JMS\Serializer\Serializer;
+use function json_last_error_msg;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,16 +22,20 @@ class TestController extends Controller
      * @Route("/api/test", name="post_test", methods={"POST"})
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param \Doctrine\ODM\MongoDB\DocumentManager $dm
-     * @param \JMS\Serializer\Serializer $serializer
+     * @param TestRepository $repository
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function post_test(Request $request, DocumentManager $dm, Serializer $serializer)
+    public function post_test(Request $request, TestRepository $repository)
     {
         $data = json_decode($request->getContent(), true);
-        if (empty($data) || !isset($data['uuid'])) {
-            return $this->msg(JsonResponse::HTTP_NOT_ACCEPTABLE, 'uuid required');
+
+        if (!$data || empty($data)) {
+            return $this->msg(JsonResponse::HTTP_NOT_ACCEPTABLE, 'content is malformed: ' . json_last_error_msg());
+        }
+
+        if(!isset($data['uuid'])) {
+            return $this->msg(JsonResponse::HTTP_NOT_ACCEPTABLE, 'uuid is required.');
         }
 
         $uuid = trim($data['uuid']);
@@ -43,45 +47,40 @@ class TestController extends Controller
         $test->setLastname($data['lastname']);
 
         $steps = [];
-        foreach ($data['steps'] as $step_input) {
-            $steps[] = new Step($step_input['question'], $step_input['answer']);
+        foreach ($data['questions'] as $question => $answer) {
+            $steps[] = new Step($question, $answer);
         }
         $test->setSteps($steps);
 
-        $repo = $dm->getRepository(Test::class);
-        /** @var Test $result */
-        $result = $repo->findOneBy(['uuid' => $uuid]);
-
+        $result = $repository->findOneBy(['uuid' => $uuid]);
         if($result) {
             try {
                 $test->setId($result->getId());
                 $test->setCreateDate($result->getCreateDate());
                 $test->setUpdatedDate(new DateTime());
-                $dm->merge($test);
+                $repository->merge($test);
             } catch (LockException $e) {
-                return $this->msg(JsonResponse::HTTP_LOCKED, 'Entity not updated. Try again.');
+                return $this->msg(JsonResponse::HTTP_LOCKED, 'entity not updated. Try again.');
             }
         } else {
             $test->setCreateDate($data['create_date']);
             $test->setUpdatedDate($data['create_date']);
-            $dm->persist($test);
+            $repository->persist($test);
         }
 
-        $dm->flush();
-        return $this->msg(JsonResponse::HTTP_CREATED,  $serializer->serialize($test, 'json'));
+        return $this->msg(JsonResponse::HTTP_CREATED,  'ok');
     }
 
     /**
      * @Route("/api/tests", name="view_tests", methods={"GET"})
      *
-     * @param \Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param TestRepository $repository
      * @param \JMS\Serializer\Serializer $serializer
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function viewTests(DocumentManager $dm, Serializer $serializer) {
-        $repo = $dm->getRepository(Test::class);
-        $allTests = $repo->findAll();
+    public function viewTests(TestRepository $repository, Serializer $serializer) {
+        $allTests = $repository->findAll();
 
         return new Response(
           $serializer->serialize($allTests, 'json'),
@@ -117,18 +116,13 @@ class TestController extends Controller
     /**
      * @Route("/api/test/{id}", name="delete_test", methods={"DELETE"})
      *
-     * @param $id
-     * @param \Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param string $uuid
+     * @param TestRepository $repository
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function deleteTest($id, DocumentManager $dm) {
-        $repo = $dm->getRepository(Test::class);
-        $test = $repo->find($id);
-
-        $dm->remove($test);
-        $dm->flush();
-
+    public function deleteTest($uuid, TestRepository $repository) {
+        $repository->delete($uuid);
         return $this->msg(JsonResponse::HTTP_OK, 'Entity deleted.');
     }
 
@@ -139,11 +133,6 @@ class TestController extends Controller
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     private function msg($code, $msg) {
-        return new JsonResponse(
-          [
-            'status' => $msg,
-          ],
-          $code
-        );
+        return new JsonResponse(['status' => $msg], $code);
     }
 }

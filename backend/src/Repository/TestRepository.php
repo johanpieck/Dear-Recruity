@@ -30,13 +30,40 @@ class TestRepository extends ServiceDocumentRepository
 
     /**
      * @param string $uuid
-     *
      * @return \App\Document\Test
      */
     public function findByUuid($uuid) {
         /** @var \App\Document\Test $test */
         $test = $this->findOneBy(['uuid' => $uuid]);
-
         return $test;
+    }
+
+    /**
+     * @param Test $test
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     */
+    public function merge($test) {
+        $this->getDocumentManager()->merge($test);
+        $this->getDocumentManager()->flush();
+    }
+
+    /**
+     * @param Test $test
+     */
+    public function persist($test) {
+        $this->getDocumentManager()->persist($test);
+        $this->getDocumentManager()->flush();
+    }
+
+    /**
+     * @param string $uuid
+     */
+    public function delete($uuid) {
+        $test = $this->findByUuid($uuid);
+
+        if($test) {
+            $this->getDocumentManager()->remove($test);
+            $this->getDocumentManager()->flush();
+        }
     }
 }

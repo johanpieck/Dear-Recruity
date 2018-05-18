@@ -14,6 +14,10 @@ class ServiceDocumentRepository extends DocumentRepository
      */
     public function __construct(DocumentManager $dm, $documentClass)
     {
+        /**
+         * HACK to be able to wire a DocumentRepository in our custom Repo
+         * fix by creeating custom service
+         */
         parent::__construct($dm, $dm->getUnitOfWork(), $dm->getClassMetadata($documentClass));
     }
 }
