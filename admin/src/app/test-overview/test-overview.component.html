@@ -1,7 +1,7 @@
 <div>
   <ul>
     <li *ngFor="let test of tests$ | async">
-      <a routerLink="detail/{{test.id}}">
+      <a routerLink="detail/{{test.uuid}}">
         {{ test.firstname }} {{ test.lastname }}
       </a>
     </li>
