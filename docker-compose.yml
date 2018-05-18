@@ -3,17 +3,12 @@ services:
   # Symfony
   symfony:
     image: nginx:alpine
+    ports:
+      - 80:80
     working_dir: /application
     volumes:
         - ./backend:/application
         - ./backend/.docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-    labels:
-      - 'traefik.backend=backend'
-      - 'traefik.port=80'
-      - "traefik.frontend.rule=Host:backend.${BASE_HOSTNAME}"
-      - "traefik.enable=${TRAEFIK_ENABLED}"
-    networks:
-      - dear-recruity
 
   php-fpm:
     build: backend/.docker/php-fpm
@@ -24,121 +19,8 @@ services:
     environment:
       - MONGODB_URL=mongodb://mongo:27017
       - MONGODB_DB=dear_recruity
-    labels:
-      - "traefik.enable=false"
-    networks:
-      - dear-recruity
 
   mongo:
     image: mongo
-    labels:
-      - "traefik.enable=false"
-    networks:
-      dear-recruity:
-        aliases:
-          - "backend.${BASE_HOSTNAME}"
-
-  # drupal
-  database:
-    image: mysql:5.7
-    volumes:
-      - ./init/database:/docker-entrypoint-initdb.d
-    environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_USER=drupal
-      - MYSQL_PASSWORD=drupal
-      - MYSQL_DATABASE=drupal
-    labels:
-      - "traefik.enable=false"
     ports:
-      - 3306:3306
-    networks:
-      - dear-recruity
-
-  web:
-    image: cegeka/php:7.2-apache-stretch
-    volumes:
-      - ./drupal:/var/www/project:cached
-      - /var/www/project/web/sites/default/files/php
-      - /var/www/project/web/sites/default/files/styles
-    environment:
-      - DRUPAL_HASH_SALT=YtkKPdmbjpY18Xu8HkF3vMbR_9hHcq4UqcBz9zk8naMiz9aHJN8BQ1sBok9HK2kKwdWu2_LQmg
-      - DRUPAL_DB_DATABASE=drupal
-      - DRUPAL_DB_USERNAME=drupal
-      - DRUPAL_DB_PASSWORD=drupal
-      - DRUPAL_DB_HOST=database
-      - DRUPAL_DB_PORT=3306
-      - TRUSTED_HOSTS_PATTERN
-      - APACHE_DOCUMENT_ROOT=/var/www/project/web
-      - PHP_UPLOAD_MAX_FILESIZE=32M
-      - PHP_POST_MAX_SIZE=32M
-      - PHP_MAX_EXECUTION_TIME=300 # 5 minutes
-      - PHP_DATE_TIMEZONE=Europe/Brussels
-      - PHP_SENDMAIL_PATH=/usr/sbin/ssmtp -t
-      - PHP_SENDMAIL_DOMAIN=mailhog:1025
-      - PHP_XDEBUG=1                 # Enable Xdebug extension
-      - PHP_XDEBUG_DEFAULT_ENABLE=0  # Comment out to disable (default).
-      - PHP_XDEBUG_REMOTE_CONNECT_BACK=0         # This is needed to respect remote.host setting bellow
-      - PHP_XDEBUG_REMOTE_HOST="10.254.254.254"  # You will also need to 'sudo ifconfig lo0 alias 10.254.254.254'
-      - PHP_XDEBUG_REMOTE_PORT
-      - BASE_HOSTNAME=${BASE_HOSTNAME}
-    labels:
-      - 'traefik.backend=web'
-      - 'traefik.port=80'
-      - "traefik.frontend.rule=Host:web.${BASE_HOSTNAME}"
-      - "traefik.enable=${TRAEFIK_ENABLED}"
-    networks:
-      dear-recruity:
-        aliases:
-          - "web.${BASE_HOSTNAME}"
-
-  varnish:
-    image: cegeka/varnish
-    depends_on:
-      - web
-    volumes:
-      - ./drupal/init/varnish:/docker-vcl-initdb.d
-    environment:
-      VARNISH_BACKEND_HOST: web.${BASE_HOSTNAME}
-      VARNISH_BACKEND_PORT: 80
-      VARNISH_PORT: 80
-      VARNISH_SECRET: secret
-      VARNISH_VCL: local.vcl
-    labels:
-      - 'traefik.backend=varnish'
-      - 'traefik.port=80'
-      - "traefik.frontend.rule=Host:${BASE_HOSTNAME}"
-      - "traefik.enable=${TRAEFIK_ENABLED}"
-    networks:
-      dear-recruity:
-        aliases:
-          - "${BASE_HOSTNAME}"
-          - "varnish.${BASE_HOSTNAME}"
-
-  mailhog:
-    image: mailhog/mailhog
-    labels:
-      - 'traefik.backend=mailhog'
-      - 'traefik.port=8025'
-      - "traefik.frontend.rule=Host:mailhog.${BASE_HOSTNAME}"
-      - "traefik.enable=${TRAEFIK_ENABLED}"
-    networks:
-      - dear-recruity
-
-  traefik:
-    image: traefik
-    command: -c /dev/null --web --docker --logLevel=INFO
-    ports:
-      - "${EXTERNAL_PORT_HTTP}:80"
-      - "${EXTERNAL_PORT_HTTPS}:443"
-      - "${EXTERNAL_PORT_TRAEFIK_DASHBOARD}:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - dear-recruity
-    depends_on:
-      - web
-
-networks:
-  dear-recruity:
-    driver: bridge
+      - 27017:27017
