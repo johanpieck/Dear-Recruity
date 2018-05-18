@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {Link} from 'react-router-dom';
 import styles from './Home.css';
+import pagerStyles from './Pager.css';
 
 export default class Pager extends Component<Props> {
 
@@ -20,8 +21,7 @@ export default class Pager extends Component<Props> {
     }
 
     return [
-      previous,
-      next
+      <div key="pager-container" className={[styles.container, pagerStyles.container].join(' ')}>{previous} {next}</div>
     ];
   }
 
