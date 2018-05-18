@@ -3,41 +3,86 @@
 namespace App\Controller;
 
 use App\Document\Step;
+use DateTime;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\LockException;
+use function dump;
 use JMS\Serializer\Serializer;
+use const JSON_ERROR_RECURSION;
+use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Document\Test;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use function var_dump;
 
 
 class TestController extends Controller
 {
     /**
-     * @Route("/mongoTest")
+     *
+     * @Route("/api/test", name="post_test", methods={"POST"})
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param \Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param \JMS\Serializer\Serializer $serializer
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function mongoTest()
+    public function post_test(Request $request, DocumentManager $dm, Serializer $serializer)
     {
-        $user = new Test();
-        $user->setEmail("hello@medium.com");
-        $user->setFirstname("Matt");
-        $user->setLastname("Matt");
+        $data = json_decode($request->getContent(), true);
+        if (empty($data) || !isset($data['uuid'])) {
+            return $this->msg(JsonResponse::HTTP_NOT_ACCEPTABLE, 'uuid required');
+        }
 
-        $user->setSteps([
-          new Step("question 1", "answer 1"),
-          new Step("question 2", "answer 2"),
-        ]);
+        $uuid = trim($data['uuid']);
 
-        $dm = $this->get('doctrine_mongodb')->getManager();
+        $test = new Test();
+        $test->setUuid($uuid);
+        $test->setEmail($data['email']);
+        $test->setFirstname($data['firstname']);
+        $test->setLastname($data['lastname']);
 
-        $dm->persist($user);
+        $steps = [];
+        foreach ($data['steps'] as $step_input) {
+            $steps[] = new Step($step_input['question'], $step_input['answer']);
+        }
+        $test->setSteps($steps);
+
+        $repo = $dm->getRepository(Test::class);
+        /** @var Test $result */
+        $result = $repo->findOneBy(['uuid' => $uuid]);
+
+        if($result) {
+            try {
+                $test->setId($result->getId());
+                $test->setCreateDate($result->getCreateDate());
+                $test->setUpdatedDate(new DateTime());
+                $dm->merge($test);
+            } catch (LockException $e) {
+                return $this->msg(JsonResponse::HTTP_LOCKED, 'Entity not updated. Try again.');
+            }
+        } else {
+            $test->setCreateDate($data['create_date']);
+            $test->setUpdatedDate($data['create_date']);
+            $dm->persist($test);
+        }
+
         $dm->flush();
-        return new JsonResponse(array('Status' => 'OK'));
+        return $this->msg(JsonResponse::HTTP_CREATED,  $serializer->serialize($test, 'json'));
     }
 
     /**
-     * @Route("/api/tests")
+     * @Route("/api/tests", name="view_tests", methods={"GET"})
+     *
+     * @param \Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param \JMS\Serializer\Serializer $serializer
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function viewTests(DocumentManager $dm, Serializer $serializer) {
         $repo = $dm->getRepository(Test::class);
@@ -45,22 +90,61 @@ class TestController extends Controller
 
         return new Response(
           $serializer->serialize($allTests, 'json'),
-          200,
+          JsonResponse::HTTP_OK,
           ['Content-Type' => 'application/json']
         );
     }
 
     /**
-     * @Route("/api/test/{id}")
+     * @Route("/api/test/{uuid}", name="view_test", methods={"GET"})
+     *
+     * @param $uuid
+     * @param \Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param \JMS\Serializer\Serializer $serializer
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function viewTest($id, DocumentManager $dm, Serializer $serializer) {
+    public function viewTest($uuid, DocumentManager $dm, Serializer $serializer) {
         $repo = $dm->getRepository(Test::class);
-        $test = $repo->find($id);
+        $test = $repo->findBy(['uuid' => $uuid]);
 
         return new Response(
           $serializer->serialize($test, 'json'),
-          200,
+          JsonResponse::HTTP_OK,
           ['Content-Type' => 'application/json']
+        );
+    }
+
+    /**
+     * @Route("/api/test/{id}", name="delete_test", methods={"DELETE"})
+     *
+     * @param $id
+     * @param \Doctrine\ODM\MongoDB\DocumentManager $dm
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function deleteTest($id, DocumentManager $dm) {
+        $repo = $dm->getRepository(Test::class);
+        $test = $repo->find($id);
+
+        $dm->remove($test);
+        $dm->flush();
+
+        return $this->msg(JsonResponse::HTTP_OK, 'Entity deleted.');
+    }
+
+    /**
+     * @param $code
+     * @param $msg
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    private function msg($code, $msg) {
+        return new JsonResponse(
+          [
+            'status' => $msg,
+          ],
+          $code
         );
     }
 }

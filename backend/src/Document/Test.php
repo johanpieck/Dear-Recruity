@@ -17,6 +17,11 @@ class Test
     /**
      * @MongoDB\Field(type="string")
      */
+    protected $uuid;
+
+    /**
+     * @MongoDB\Field(type="string")
+     */
     protected $firstname;
 
     /**
@@ -35,12 +40,17 @@ class Test
     protected $create_date;
 
     /**
+     * @MongoDB\Field(type="date")
+     */
+    protected $updated_date;
+
+    /**
      * @MongoDB\EmbedMany(targetDocument="Step")
      */
     protected $steps;
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getId()
     {
@@ -48,7 +58,7 @@ class Test
     }
 
     /**
-     * @param mixed $id
+     * @param string $id
      */
     public function setId($id)
     {
@@ -56,7 +66,7 @@ class Test
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getFirstname()
     {
@@ -64,7 +74,7 @@ class Test
     }
 
     /**
-     * @param mixed $firstname
+     * @param string $firstname
      */
     public function setFirstname($firstname)
     {
@@ -72,7 +82,7 @@ class Test
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getLastname()
     {
@@ -80,7 +90,7 @@ class Test
     }
 
     /**
-     * @param mixed $lastname
+     * @param string $lastname
      */
     public function setLastname($lastname)
     {
@@ -88,7 +98,7 @@ class Test
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getEmail()
     {
@@ -96,7 +106,7 @@ class Test
     }
 
     /**
-     * @param mixed $email
+     * @param string $email
      */
     public function setEmail($email)
     {
@@ -104,7 +114,7 @@ class Test
     }
 
     /**
-     * @return mixed
+     * @return \DateTime
      */
     public function getCreateDate()
     {
@@ -112,7 +122,7 @@ class Test
     }
 
     /**
-     * @param mixed $create_date
+     * @param \DateTime $create_date
      */
     public function setCreateDate($create_date)
     {
@@ -120,7 +130,7 @@ class Test
     }
 
     /**
-     * @return mixed
+     * @return \App\Document\Step[]
      */
     public function getSteps()
     {
@@ -128,10 +138,42 @@ class Test
     }
 
     /**
-     * @param mixed $steps
+     * @param \App\Document\Step[] $steps
      */
     public function setSteps($steps)
     {
         $this->steps = $steps;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+    /**
+     * @param string $uuid
+     */
+    public function setUuid($uuid)
+    {
+        $this->uuid = $uuid;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getUpdatedDate()
+    {
+        return $this->updated_date;
+    }
+
+    /**
+     * @param \DateTime $updated_date
+     */
+    public function setUpdatedDate($updated_date)
+    {
+        $this->updated_date = $updated_date;
     }
 }

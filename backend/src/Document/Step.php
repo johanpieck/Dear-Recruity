@@ -26,7 +26,7 @@ class Step
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getQuestion()
     {
@@ -34,7 +34,7 @@ class Step
     }
 
     /**
-     * @param mixed $question
+     * @param string $question
      */
     public function setQuestion($question)
     {
@@ -42,7 +42,7 @@ class Step
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getAnswer()
     {
@@ -50,7 +50,7 @@ class Step
     }
 
     /**
-     * @param mixed $answer
+     * @param string $answer
      */
     public function setAnswer($answer)
     {
