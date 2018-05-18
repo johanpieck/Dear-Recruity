@@ -37,9 +37,21 @@ import styles from './MultipleChoiceQuestion.css';
         selectedOption: e.target.value
       });
       sessionStorage.setItem(this.props.question, e.target.value);
-      console.log(sessionStorage);
+      console.log(JSON.stringify(sessionStorage));
+      this.sendDataToSymfony();
     }
   
+    sendDataToSymfony() {
+      fetch('http://10.161.128.60/api/test', {
+      method: 'POST',
+      headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(sessionStorage)
+    })
+    }
+
     render() {
       return (
         <div className={styles.container}>
