@@ -11,7 +11,7 @@ import styles from './MultipleChoiceQuestion.css';
               name={props.question}
               value={index}
               key={index}
-              checked={(selected == index) ? true : false}
+              checked={sessionStorage.getItem(props.question) == index}
               onChange={onChange}
                />
             {name}
@@ -36,6 +36,8 @@ import styles from './MultipleChoiceQuestion.css';
       this.setState({
         selectedOption: e.target.value
       });
+      sessionStorage.setItem(this.props.question, e.target.value);
+      console.log(sessionStorage);
     }
   
     render() {

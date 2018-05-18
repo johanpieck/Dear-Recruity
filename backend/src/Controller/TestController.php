@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Document\Step;
+use App\Repository\TestRepository;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
@@ -96,15 +97,13 @@ class TestController extends Controller
      * @Route("/api/test/{uuid}", name="view_test", methods={"GET"})
      *
      * @param $uuid
-     * @param \Doctrine\ODM\MongoDB\DocumentManager $dm
+     * @param TestRepository $repository
      * @param \JMS\Serializer\Serializer $serializer
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function viewTest($uuid, DocumentManager $dm, Serializer $serializer) {
-        $repo = $dm->getRepository(Test::class);
-        $test = $repo->findBy(['uuid' => $uuid]);
-
+    public function viewTest($uuid, TestRepository $repository, Serializer $serializer) {
+        $test = $repository->findByUuid($uuid);
         return new Response(
           $serializer->serialize($test, 'json'),
           JsonResponse::HTTP_OK,
