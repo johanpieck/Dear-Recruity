@@ -4,21 +4,15 @@ namespace App\Controller;
 
 use App\Document\Step;
 use DateTime;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
-use function dump;
 use JMS\Serializer\Serializer;
-use const JSON_ERROR_RECURSION;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Document\Test;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use function var_dump;
-
 
 class TestController extends Controller
 {
