@@ -8,6 +8,8 @@ type Props = {};
 export default class Home extends Component<Props> {
   props: Props;
 
+  inputNotEmpty = false;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -20,13 +22,13 @@ export default class Home extends Component<Props> {
 
   handleChange(event) {
     this.setState({nameValue: event.target.value});
+    this.inputNotEmpty = true;
   }
 
   handleSubmit(event) {
     console.log('A name was submitted: ' + this.state.nameValue);
     sessionStorage.setItem('uuid', this.state.nameValue);
     console.log(sessionStorage);
-    event.preventDefault();
   }
 
   render() {
@@ -79,12 +81,11 @@ export default class Home extends Component<Props> {
           </svg>
           <h2>deer recruity</h2>
           <p className={styles.intro}>Proin eget tortor risus. Cras ultricies ligula sed magna dictum porta. Quisque velit nisi, pretium ut lacinia in, elementum id enim.</p>
-          <form onSubmit={this.handleSubmit}>
-            <label>Please give us your name</label>
-            <input type="text" value={this.state.nameValue} onChange={this.handleChange} />
-            <input type="submit" value="Go!" />
-          </form>
-          <Link className={styles.linktotests} to="/steps/0">Show me the questions!</Link>
+          <div>
+            <input placeholder="Please give us your name" type="text" value={this.state.nameValue} onChange={this.handleChange} />
+            <br/>
+            <Link to="/steps/0" className={ (this.inputNotEmpty ? '' : 'disabled') } onClick={this.handleSubmit}>Show me the questions</Link>
+          </div>
         </div>
       </div>
     );

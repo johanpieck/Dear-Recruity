@@ -32,6 +32,27 @@
   fill: #303030;
 }
 
+.container input[type="text"] {
+  width: 50%;
+  margin: 20px auto;
+  font-size: 20px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 0;
+  background: #fff;
+}
+
+.container input[type="submit"] {
+  color: #fff;
+  font-size: 1.4rem;
+  background: orangered;
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin: 60px 0 0;
+  display: inline-block;
+  border: 0;
+}
+
 .intro {
   width: 60%;
   margin: 0 auto;
