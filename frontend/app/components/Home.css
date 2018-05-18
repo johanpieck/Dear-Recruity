@@ -3,14 +3,14 @@
   position: absolute;
   width: 100%;
   left: 0;
-  top: calc(50% - 220px);
+  top: calc(50% - 300px);
 }
 
 .container h2 {
   font-size: 5rem;
-  line-height: 0.8;
+  line-height: 1.5;
   color: #303030;
-  margin-top: 20px;  
+  margin-top: 0;  
 }
 
 .container a {
@@ -25,9 +25,15 @@
 
 .logo {
   width: 200px;
-  margin: 0 0 -20px;
+  margin: 0;
 }
 
 .svgcolor {
   fill: #303030;
+}
+
+.intro {
+  width: 60%;
+  margin: 0 auto;
+  font-size: 16px;
 }
