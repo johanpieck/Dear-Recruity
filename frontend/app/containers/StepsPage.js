@@ -35,7 +35,7 @@ export default class StepsPage extends Component<Props> {
   render() {
     let question = [];
     let pager = [];
-
+    
     if (typeof this.state.posts[this.props.match.params.id] !== "undefined") {
       question = <MultipleChoiceQuestion key="1" {...this.state.posts[this.props.match.params.id].fields} />;
       pager = <Pager key="2" id={this.props.match.params.id} max={this.state.posts.length} />
@@ -44,7 +44,7 @@ export default class StepsPage extends Component<Props> {
     return ([
         <Steps key="0" fields={this.state.posts} />,
         question,
-        pager
+        pager,
       ]
     );
   }
