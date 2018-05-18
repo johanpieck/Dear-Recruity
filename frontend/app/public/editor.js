@@ -208,6 +208,16 @@ export function editor() {
     setTimeout(cry, 300000);
   });
 
+  document.getElementsByClassName('theme-light')[0].addEventListener('click', function(e) {
+    e.preventDefault();
+    aceEditor.setTheme("ace/theme/github");
+  });
+
+  document.getElementsByClassName('theme-dark')[0].addEventListener('click', function(e) {
+    e.preventDefault();
+    aceEditor.setTheme("ace/theme/twilight");
+  });
+
 }
 
 export function resizeEditor() {
