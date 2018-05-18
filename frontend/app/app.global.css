@@ -13,6 +13,11 @@ body {
   overflow-y: hidden;
 }
 
+.cry {
+  background-size: 50px;
+  background: url("public/6093959d00987965.gif") no-repeat center center;
+}
+
 h2 {
   margin: 0;
   font-size: 2.25rem;

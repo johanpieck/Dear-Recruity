@@ -1,0 +1,11 @@
+<div *ngIf="test">
+  First name: {{ test.firstname }}<br>
+  Last name: {{ test.lastname }}<br>
+  Steps:<br>
+  <ul>
+    <li *ngFor="let step of test.steps">
+      Question: {{ step.question }}<br>
+      Answer: {{ step.answer }}<br>
+    </li>
+  </ul>
+</div>
