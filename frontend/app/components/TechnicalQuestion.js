@@ -10,6 +10,13 @@ export default class TechnicalQuestion extends Component<Props> {
     resizeEditor();
   }
 
+  emitChange() {
+    console.log('changed');
+    console.log(this.editor.innerHTML);
+    sessionStorage.setItem(this.props.question, this.editor.innerHTML);
+
+  }
+
   render() {
     return (
       <div className={styles.container}>
@@ -18,7 +25,7 @@ export default class TechnicalQuestion extends Component<Props> {
           <a href="#" className="theme-light">Switch to light theme</a>&nbsp;
           <a href="#" className="theme-dark">Switch to dark theme</a>
         </div>
-        <div id="editor" className={styles.editor}>{this.props.question.fields.codeEditor}</div>
+        <div id="editor" onInput= {this.emitChange} className={styles.editor}>{this.props.question.fields.codeEditor}</div>
       </div>
     );
   }

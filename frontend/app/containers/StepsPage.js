@@ -25,6 +25,7 @@ let mapQuestionToQuestionType = function(question) {
 };
 
 export default class StepsPage extends Component<Props> {
+  
 
   props: Props;
 
@@ -49,12 +50,12 @@ export default class StepsPage extends Component<Props> {
   };
 
   render() {
+    sessionStorage.setItem('uuid', 'ElonRocket2018');
     let question = [];
     let pager = [];
 
     if (typeof this.state.posts[this.props.match.params.id] !== "undefined") {
       question = mapQuestionToQuestionType(this.state.posts[this.props.match.params.id]);
-
       pager = <Pager key="2" id={this.props.match.params.id} max={this.state.posts.length} />
     }
 
